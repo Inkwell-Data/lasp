@@ -107,7 +107,7 @@ init([Prefix]) ->
         {ok, C} ->
             {ok, #state{eredis=C, prefix=Prefix}};
         Error ->
-            lager:error("Error connecting to redis for workflow management: ~p",
+            logger:error("Error connecting to redis for workflow management: ~p",
                         [Error]),
             {stop, Error}
     end.
@@ -161,17 +161,17 @@ handle_call(reset, _From, #state{eredis=Eredis}=State) ->
     eredis:q(Eredis, ["FLUSHALL"]),
     {reply, ok, State};
 handle_call(Msg, _From, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {reply, ok, State}.
 
 %% @private
 handle_cast(Msg, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private
 handle_info(Msg, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private

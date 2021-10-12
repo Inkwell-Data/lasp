@@ -308,7 +308,7 @@ init([]) ->
         {error, {already_started, Pid}} ->
             {ok, Pid};
         {error, Reason} ->
-            _ = lager:error("Failed to initialize backend: ~p", [Reason]),
+            _ = logger:error("Failed to initialize backend: ~p", [Reason]),
             {error, Reason}
     end,
 
@@ -710,20 +710,20 @@ handle_call({fold, Id, Function, AccId}, _From, #state{store=Store}=State) ->
     {reply, ok, State};
 
 handle_call(Msg, _From, State) ->
-    _ = lager:warning("Unhandled call messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled call messages: ~p", [Msg]),
     {reply, ok, State}.
 
 -spec handle_cast(term(), #state{}) -> {noreply, #state{}}.
 
 handle_cast(Msg, State) ->
-    _ = lager:warning("Unhandled cast messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled cast messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private
 -spec handle_info(term(), #state{}) -> {noreply, #state{}}.
 
 handle_info(Msg, State) ->
-    _ = lager:warning("Unhandled info messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled info messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private

@@ -54,7 +54,7 @@
 %%%===================================================================
 
 %% state_based messages:
-extract_log_type_and_payload({state_ack, _From, _Id, {_Id, _Type, _Metadata, State}}) ->
+extract_log_type_and_payload({state_ack, _From, Id, {Id, _Type, _Metadata, State}}) ->
     [{state_ack, State}];
 extract_log_type_and_payload({state_send, _Node, {Id, Type, _Metadata, State}, _AckRequired}) ->
     [{Id, State}, {Type, State}, {state_send, State}, {state_send_protocol, Id}].
@@ -137,7 +137,7 @@ handle_call({propagate, ObjectFilterFun}, _From,
 
             {reply, ok, State};
         false ->
-            % lager:info("No peers, not blocking.", []),
+            % logger:info("No peers, not blocking.", []),
             {reply, ok, State}
     end;
 
@@ -169,15 +169,15 @@ handle_call({blocking_sync, ObjectFilterFun}, From,
             %% Mark response as waiting.
             BlockingSyncs = dict:store(From, Objects, BlockingSyncs0),
 
-            % lager:info("Blocking sync initialized for ~p ~p", [From, Objects]),
+            % logger:info("Blocking sync initialized for ~p ~p", [From, Objects]),
             {noreply, State#state{blocking_syncs=BlockingSyncs}};
         false ->
-            % lager:info("No peers, not blocking.", []),
+            % logger:info("No peers, not blocking.", []),
             {reply, ok, State}
     end;
 
 handle_call(Msg, _From, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {reply, ok, State}.
 
 -spec handle_cast(term(), #state{}) -> {noreply, #state{}}.
@@ -185,12 +185,12 @@ handle_call(Msg, _From, State) ->
 handle_cast({state_ack, From, Id, {Id, _Type, _Metadata, Value}},
             #state{store=Store,
                    blocking_syncs=BlockingSyncs0}=State) ->
-    % lager:info("Received ack from ~p for ~p with value ~p", [From, Id, Value]),
+    % logger:info("Received ack from ~p for ~p with value ~p", [From, Id, Value]),
 
     BlockingSyncs = dict:fold(fun(K, V, Acc) ->
-                % lager:info("Was waiting ~p ~p", [Key, Value]),
+                % logger:info("Was waiting ~p ~p", [Key, Value]),
                 StillWaiting = lists:delete({From, Id}, V),
-                % lager:info("Now waiting ~p ~p", [Key, StillWaiting]),
+                % logger:info("Now waiting ~p ~p", [Key, StillWaiting]),
                 case length(StillWaiting) == 0 of
                     true ->
                         %% Bind value locally from server response.
@@ -241,7 +241,7 @@ handle_cast({state_send, From, {Id, Type, _Metadata, Value}, AckRequired},
     {noreply, State};
 
 handle_cast(Msg, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private
@@ -302,7 +302,7 @@ handle_info(plumtree_peer_refresh, State) ->
     {noreply, State#state{gossip_peers=GossipPeers}};
 
 handle_info(Msg, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private
@@ -488,7 +488,7 @@ plumtree_gossip_peers(Root) ->
     OutLinks = ordsets:to_list(EagerPeers),
 
     GossipPeers = lists:usort(InLinks ++ OutLinks),
-    lager:info("PLUMTREE DEBUG: Gossip Peers: ~p", [GossipPeers]),
+    logger:info("PLUMTREE DEBUG: Gossip Peers: ~p", [GossipPeers]),
 
     GossipPeers.
 

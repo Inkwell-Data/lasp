@@ -55,7 +55,7 @@ start_link() ->
 %% @private
 -spec init([term()]) -> {ok, #state{}}.
 init([]) ->
-    lager:info("Throughput client initialized."),
+    logger:info("Throughput client initialized."),
 
     %% Generate actor identifier.
     Actor = lasp_support:mynode(),
@@ -72,13 +72,13 @@ init([]) ->
 -spec handle_call(term(), {pid(), term()}, #state{}) ->
     {reply, term(), #state{}}.
 handle_call(Msg, _From, State) ->
-    lager:warning("Unhandled messages: ~p", [Msg]),
+    logger:warning("Unhandled messages: ~p", [Msg]),
     {reply, ok, State}.
 
 %% @private
 -spec handle_cast(term(), #state{}) -> {noreply, #state{}}.
 handle_cast(Msg, State) ->
-    lager:warning("Unhandled messages: ~p", [Msg]),
+    logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private
@@ -106,7 +106,7 @@ handle_info(event, #state{actor=Actor,
                                               true ->
                                                   BatchEnd = erlang:timestamp(),
 
-                                                  lager:info("Events done: ~p, Batch finished!  ~p, Node: ~p",
+                                                  logger:info("Events done: ~p, Batch finished!  ~p, Node: ~p",
                                                              [Events1, ?BATCH_EVENTS, Actor]),
 
                                                   log_batch(BatchStart1, BatchEnd, ?BATCH_EVENTS),
@@ -124,7 +124,7 @@ handle_info(event, #state{actor=Actor,
 
             case Events1 == max_events() of
                 true ->
-                    lager:info("All events done. Node: ~p", [Actor]),
+                    logger:info("All events done. Node: ~p", [Actor]),
 
                     %% Update Simulation Status Instance
                     lasp_workflow:task_completed(events, lasp_support:mynode()),
@@ -148,7 +148,7 @@ handle_info(check_simulation_end, #state{actor=Actor}=State) ->
 
     case lasp_workflow:is_task_completed(events) of
         true ->
-            lager:info("All nodes did all events. Node ~p", [Actor]),
+            logger:info("All nodes did all events. Node ~p", [Actor]),
             lasp_instrumentation:stop(),
             lasp_support:push_logs(),
             lasp_workflow:task_completed(logs, lasp_support:mynode());
@@ -159,7 +159,7 @@ handle_info(check_simulation_end, #state{actor=Actor}=State) ->
     {noreply, State};
 
 handle_info(Msg, State) ->
-    lager:warning("Unhandled messages: ~p", [Msg]),
+    logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private

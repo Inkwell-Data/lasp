@@ -85,7 +85,7 @@ broadcast_data(#broadcast{timestamp=Timestamp}) ->
 %%      local datastore.
 -spec merge(broadcast_id(), broadcast_payload()) -> boolean().
 merge(Timestamp, Timestamp) ->
-    lager:info("Heartbeat received: ~p", [Timestamp]),
+    logger:info("Heartbeat received: ~p", [Timestamp]),
 
     case is_stale(Timestamp) of
         true ->
@@ -158,7 +158,7 @@ handle_call({is_stale, Timestamp}, _From, State) ->
 handle_call({graft, Timestamp}, _From, State) ->
     Result = case ets:lookup(?MODULE, Timestamp) of
         [] ->
-            lager:info("Timestamp: ~p not found for graft.", [Timestamp]),
+            logger:info("Timestamp: ~p not found for graft.", [Timestamp]),
             {error, {not_found, Timestamp}};
         [{Timestamp, _}] ->
             {ok, Timestamp}
@@ -168,13 +168,13 @@ handle_call({merge, Timestamp}, _From, State) ->
     true = ets:insert(?MODULE, [{Timestamp, true}]),
     {reply, ok, State};
 handle_call(Msg, _From, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {reply, ok, State}.
 
 -spec handle_cast(term(), #state{}) -> {noreply, #state{}}.
 %% @private
 handle_cast(Msg, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private
@@ -199,7 +199,7 @@ handle_info(heartbeat, State) ->
             %% Send message with monotonically increasing integer.
             ok = plumtree_broadcast:broadcast(#broadcast{timestamp=Timestamp}, ?MODULE),
 
-            lager:info("Heartbeat triggered: sending ping ~p to ensure tree.",
+            logger:info("Heartbeat triggered: sending ping ~p to ensure tree.",
                        [Timestamp]);
         false ->
             ok
@@ -210,7 +210,7 @@ handle_info(heartbeat, State) ->
 
     {noreply, State};
 handle_info(Msg, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private
@@ -283,7 +283,7 @@ extract_log_type_and_payload({i_have, MessageId, _Mod, Round, Root, From}) ->
             []
     end;
 extract_log_type_and_payload(Message) ->
-    lager:info("No match for extracted payload: ~p", [Message]),
+    logger:info("No match for extracted payload: ~p", [Message]),
     [].
 
 %% @private

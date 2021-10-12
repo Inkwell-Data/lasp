@@ -527,7 +527,7 @@ bind_var(Origin, Id, Value, MetadataFun, Store) ->
                 catch
                     _:_Reason ->
                         %% Merge threw.
-                        % _ = lager:warning("Exception; type: ~p, reason: ~p ~p => ~p",
+                        % _ = logger:warning("Exception; type: ~p, reason: ~p ~p => ~p",
                         %                   [Type, Reason, Value0, Value]),
                         {Object, {ok, {Id, Type, Metadata, Value0}}}
                 end

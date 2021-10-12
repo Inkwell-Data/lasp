@@ -97,7 +97,7 @@ start_tracked_process(EventCount, [ReadFuns, TransFun, WriteFun]) ->
                             lasp_process_sup:start_child(EventCount,
                                                          [ReadFuns, TransFun, WriteFun]);
                         true ->
-                            lager:warning("dependence dag edge from ~w to ~w would form a cycle~n", [From, To]),
+                            logger:warning("dependence dag edge from ~w to ~w would form a cycle~n", [From, To]),
                             %% @todo propagate errors
                             {ok, ignore}
                     end;

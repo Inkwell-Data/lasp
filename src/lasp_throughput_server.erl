@@ -55,7 +55,7 @@ start_link() ->
 %% @private
 -spec init([term()]) -> {ok, #state{}}.
 init([]) ->
-    lager:info("Throughput server initialized."),
+    logger:info("Throughput server initialized."),
 
     %% Delay for graph connectedness.
     wait_for_connectedness(),
@@ -76,13 +76,13 @@ init([]) ->
 -spec handle_call(term(), {pid(), term()}, #state{}) ->
     {reply, term(), #state{}}.
 handle_call(Msg, _From, State) ->
-    lager:warning("Unhandled messages: ~p", [Msg]),
+    logger:warning("Unhandled messages: ~p", [Msg]),
     {reply, ok, State}.
 
 %% @private
 -spec handle_cast(term(), #state{}) -> {noreply, #state{}}.
 handle_cast(Msg, State) ->
-    lager:warning("Unhandled messages: ~p", [Msg]),
+    logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 handle_info(check_simulation_end, State) ->
@@ -91,7 +91,7 @@ handle_info(check_simulation_end, State) ->
     {ok, NodesWithAllEvents} = lasp_workflow:task_progress(events),
     {ok, NodesWithLogsPushed} = lasp_workflow:task_progress(logs),
 
-    lager:info("Checking for simulation end: ~p nodes with all events and ~p nodes with logs pushed.",
+    logger:info("Checking for simulation end: ~p nodes with all events and ~p nodes with logs pushed.",
                [NodesWithAllEvents, NodesWithLogsPushed]),
 
     case lasp_workflow:is_task_completed(logs) of
@@ -108,7 +108,7 @@ handle_info(check_simulation_end, State) ->
     {noreply, State};
 
 handle_info(Msg, State) ->
-    lager:warning("Unhandled messages: ~p", [Msg]),
+    logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private

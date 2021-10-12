@@ -89,7 +89,7 @@ init([]) ->
         {ok, C} ->
             {ok, #state{eredis=C}};
         Error ->
-            lager:error("Error connecting to redis for workflow management: ~p",
+            logger:error("Error connecting to redis for workflow management: ~p",
                         [Error]),
             {stop, Error}
     end.
@@ -102,40 +102,40 @@ init([]) ->
 handle_call({task_progress, Task}, _From, #state{eredis=Eredis}=State) ->
     {ok, Objects} = eredis:q(Eredis, ["KEYS", prefix(Task, "*")]),
     NumObjects = length(Objects),
-    % lager:info("Task ~p progress: ~p", [Task, NumObjects]),
+    % logger:info("Task ~p progress: ~p", [Task, NumObjects]),
     {reply, {ok, NumObjects}, State};
 handle_call({is_task_completed, Task, NumNodes}, _From, #state{eredis=Eredis}=State) ->
     {ok, Objects} = eredis:q(Eredis, ["KEYS", prefix(Task, "*")]),
     Result = case length(Objects) of
         NumNodes ->
-            % lager:info("Task ~p completed on all nodes.", [Task]),
+            % logger:info("Task ~p completed on all nodes.", [Task]),
             true;
         _Other ->
-            % lager:info("Task ~p incomplete: only on ~p/~p nodes.",
+            % logger:info("Task ~p incomplete: only on ~p/~p nodes.",
             %            [Task, Other, NumNodes]),
             false
     end,
     {reply, Result, State};
 handle_call({task_completed, Task, Node}, _From, #state{eredis=Eredis}=State) ->
     Path = prefix(Task, Node),
-    % lager:info("Setting ~p to true.", [Path]),
+    % logger:info("Setting ~p to true.", [Path]),
     {ok, <<"OK">>} = eredis:q(Eredis, ["SET", Path, true]),
     {reply, ok, State};
 
 handle_call(Msg, _From, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {reply, ok, State}.
 
 -spec handle_cast(term(), #state{}) -> {noreply, #state{}}.
 
 %% @private
 handle_cast(Msg, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private
 handle_info(Msg, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private

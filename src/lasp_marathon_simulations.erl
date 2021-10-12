@@ -34,7 +34,7 @@ stop() ->
 
     lists:foreach(
         fun(AppName) ->
-            lager:info("Deleting Marathon app: ~p", [AppName]),
+            logger:info("Deleting Marathon app: ~p", [AppName]),
             delete_marathon_app(DCOS, AppName)
         end,
         RunningApps).
@@ -47,7 +47,7 @@ delete_marathon_app(DCOS, AppName) ->
         {ok, {{_, 200, _}, _, _Body}} ->
             ok;
         Other ->
-            lager:info("Delete app ~p request failed: ~p", [AppName, Other])
+            logger:info("Delete app ~p request failed: ~p", [AppName, Other])
     end.
 
 log_message_queue_size(Method) ->

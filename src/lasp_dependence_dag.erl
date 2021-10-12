@@ -463,7 +463,7 @@ handle_info(contract, #state{contraction_timer=OldTRef}=State) ->
     {noreply, NewState#state{contraction_timer=TRef}};
 
 handle_info(Msg, State) ->
-    _ = lager:warning("Unhandled messages ~p", [Msg]),
+    _ = logger:warning("Unhandled messages ~p", [Msg]),
     {noreply, State}.
 
 %% @private
@@ -534,9 +534,9 @@ add_edges(Src, Dst, Pid, ReadFuns, TransFun, {Dst, WriteFun}, State) ->
                                 ok;
                             Depth0 ->
                                 VertexResult = digraph:add_vertex(Dag, Dst, Depth),
-                                lager:info("Vertex: ~p re-created with depth ~p => ~p; result: ~p",
+                                logger:info("Vertex: ~p re-created with depth ~p => ~p; result: ~p",
                                            [Dst, Depth0, Depth, VertexResult]),
-                                lager:info("Vertex: ~p edges: ~p",
+                                logger:info("Vertex: ~p edges: ~p",
                                            [Dst, digraph:edges(Dag, Dst)])
                         end;
                     _ ->
