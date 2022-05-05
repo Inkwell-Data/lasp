@@ -75,13 +75,13 @@ init([]) ->
 -spec handle_call(term(), {pid(), term()}, #state{}) ->
     {reply, term(), #state{}}.
 handle_call(Msg, _From, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {reply, ok, State}.
 
 -spec handle_cast(term(), #state{}) -> {noreply, #state{}}.
 %% @private
 handle_cast(Msg, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private
@@ -98,7 +98,7 @@ handle_info(plumtree_memory_report, State) ->
     {noreply, State};
 
 handle_info(Msg, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private
@@ -128,5 +128,5 @@ schedule_plumtree_memory_report() ->
 %% @private
 plumtree_memory_report() ->
     PlumtreeBroadcast = erlang:whereis(plumtree_broadcast),
-    lager:info("Plumtree message queue: ~p",
+    logger:info("Plumtree message queue: ~p",
                [process_info(PlumtreeBroadcast, message_queue_len)]).

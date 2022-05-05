@@ -39,7 +39,7 @@ join(NodeStr, JoinFn, SuccessFmt, SuccessArgs) ->
         end
     catch
         Exception:Reason ->
-            lager:error("Join failed ~p:~p", [Exception, Reason]),
+            logger:error("Join failed ~p:~p", [Exception, Reason]),
             io:format("Join failed, see log for details~n"),
             error
     end.

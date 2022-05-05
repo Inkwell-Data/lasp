@@ -118,13 +118,13 @@ init([Identifier]) ->
     %% Start the storage backend.
     case Backend:start_link(Identifier) of
         {ok, StorePid} ->
-            _ = lager:info("Backend ~p initialized: ~p", [Backend, StorePid]),
+            _ = logger:info("Backend ~p initialized: ~p", [Backend, StorePid]),
             {ok, #state{backend=Backend, store=StorePid}};
         {error, {already_started, StorePid}} ->
-            _ = lager:info("Backend ~p initialized: ~p", [Backend, StorePid]),
+            _ = logger:info("Backend ~p initialized: ~p", [Backend, StorePid]),
             {ok, #state{backend=Backend, store=StorePid}};
         {error, Reason} ->
-            _ = lager:error("Failed to initialize backend ~p: ~p", [Backend, Reason]),
+            _ = logger:error("Failed to initialize backend ~p: ~p", [Backend, Reason]),
             {stop, Reason}
     end.
 
@@ -149,12 +149,12 @@ handle_call(reset, _From, #state{store=Store}=State) ->
     {reply, Result, State};
 
 handle_call(Msg, _From, State) ->
-    _ = lager:warning("Unhandled call messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled call messages: ~p", [Msg]),
     {reply, ok, State}.
 
 %% @private
 handle_cast(Msg, State) ->
-    _ = lager:warning("Unhandled cast messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled cast messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private
@@ -179,7 +179,7 @@ handle_info(waiting_threads_pruning, #state{store=Store}=State) ->
     {noreply, State};
 
 handle_info(Msg, State) ->
-    _ = lager:warning("Unhandled info messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled info messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private

@@ -55,7 +55,7 @@ start_link() ->
 %% @private
 -spec init([term()]) -> {ok, #state{}}.
 init([]) ->
-    lager:info("Divergence client initialized."),
+    logger:info("Divergence client initialized."),
 
     %% Generate actor identifier.
     Actor = lasp_support:mynode(),
@@ -70,15 +70,15 @@ init([]) ->
     Threshold = {value, max_events() * client_number()},
 
     EnforceFun = fun() ->
-                         lager:info("Threshold exceeded!"),
+                         logger:info("Threshold exceeded!"),
                          lasp_config:set(events_generated, true)
                  end,
 
-    lager:info("Configuring invariant for threshold: ~p", [Threshold]),
+    logger:info("Configuring invariant for threshold: ~p", [Threshold]),
     spawn_link(fun() ->
                        lasp:invariant(?SIMPLE_COUNTER, Threshold, EnforceFun)
                end),
-    lager:info("Configured."),
+    logger:info("Configured."),
 
     {ok, #state{actor=Actor,
                 events=0,
@@ -89,13 +89,13 @@ init([]) ->
 -spec handle_call(term(), {pid(), term()}, #state{}) ->
     {reply, term(), #state{}}.
 handle_call(Msg, _From, State) ->
-    lager:warning("Unhandled messages: ~p", [Msg]),
+    logger:warning("Unhandled messages: ~p", [Msg]),
     {reply, ok, State}.
 
 %% @private
 -spec handle_cast(term(), #state{}) -> {noreply, #state{}}.
 handle_cast(Msg, State) ->
-    lager:warning("Unhandled messages: ~p", [Msg]),
+    logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private
@@ -123,7 +123,7 @@ handle_info(event, #state{actor=Actor,
                                               true ->
                                                   BatchEnd = erlang:timestamp(),
 
-                                                  lager:info("Events done: ~p, Batch finished!  ~p, Node: ~p",
+                                                  logger:info("Events done: ~p, Batch finished!  ~p, Node: ~p",
                                                              [Events1, ?BATCH_EVENTS, Actor]),
 
                                                   log_batch(BatchStart1, BatchEnd, ?BATCH_EVENTS),
@@ -142,18 +142,18 @@ handle_info(event, #state{actor=Actor,
             case max_events_reached() of
                 true ->
                     Value = lasp:query(?SIMPLE_COUNTER),
-                    lager:info("All events done, counter is now: ~p.
+                    logger:info("All events done, counter is now: ~p.
                                Node: ~p", [Value, Actor]),
 
                     case BatchStart2 of
                         undefined ->
-                            lager:info("Simulation finished at batch."),
+                            logger:info("Simulation finished at batch."),
                             ok;
                         _ ->
                             FinalBatchEnd = erlang:timestamp(),
-                            lager:info("Batch in progress: ~p", [BatchEvents1]),
+                            logger:info("Batch in progress: ~p", [BatchEvents1]),
                             log_batch(BatchStart2, FinalBatchEnd, BatchEvents1),
-                            lager:info("Logging final batch: ~p", [BatchEvents1]),
+                            logger:info("Logging final batch: ~p", [BatchEvents1]),
                             ok
                     end,
 
@@ -180,7 +180,7 @@ handle_info(check_simulation_end, #state{actor=Actor}=State) ->
 
     case lasp_workflow:is_task_completed(events) of
         true ->
-            lager:info("All nodes did all events. Node ~p", [Actor]),
+            logger:info("All nodes did all events. Node ~p", [Actor]),
             case lasp_workflow:is_task_completed(anti_entropy, 1) of
                 true ->
                     lasp_instrumentation:stop(),
@@ -196,7 +196,7 @@ handle_info(check_simulation_end, #state{actor=Actor}=State) ->
     {noreply, State};
 
 handle_info(Msg, State) ->
-    lager:warning("Unhandled messages: ~p", [Msg]),
+    logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private

@@ -75,19 +75,19 @@ handle_call(unique, _From, State) ->
 
 %% @private
 handle_call(Msg, _From, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {reply, ok, State}.
 
 %% @private
 -spec handle_cast(term(), #state{}) -> {noreply, #state{}}.
 handle_cast(Msg, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private
 -spec handle_info(term(), #state{}) -> {noreply, #state{}}.
 handle_info(Msg, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private

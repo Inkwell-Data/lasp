@@ -250,7 +250,7 @@ start_runner() ->
         ok ->
             ok;
         Reason ->
-            lager:info("Received unexpected error: ~p", [Reason]),
+            logger:info("Received unexpected error: ~p", [Reason]),
             exit(Reason)
     end,
 
@@ -266,7 +266,7 @@ start_runner() ->
     ok = lasp_config:set(workflow, true),
     ok = partisan_config:set(partisan_peer_service_manager,
                              partisan_pluggable_peer_service_manager),
-    lager:info("Configured peer_service_manager ~p on node ~p",
+    logger:info("Configured peer_service_manager ~p on node ~p",
                [partisan_pluggable_peer_service_manager, lasp_support:mynode()]),
 
     {ok, _} = application:ensure_all_started(lasp),
@@ -294,7 +294,7 @@ load_lasp(Node, _Config, Case) ->
     ct:pal("Loading applications on node: ~p", [Node]),
         
     PrivDir = code:priv_dir(?APP),
-    NodeDir = filename:join([PrivDir, "lager", Case, Node]),
+    NodeDir = filename:join([PrivDir, Case, Node]),
 
     %% Manually force sasl loading, and disable the logger.
     ok = rpc:call(Node, application, load, [sasl]),
@@ -304,7 +304,6 @@ load_lasp(Node, _Config, Case) ->
 
     ok = rpc:call(Node, application, load, [plumtree]),
     ok = rpc:call(Node, application, load, [partisan]),
-    ok = rpc:call(Node, application, load, [lager]),
     ok = rpc:call(Node, application, load, [lasp]),
     ok = rpc:call(Node, application, set_env, [sasl,
                                                sasl_error_logger,
@@ -312,9 +311,6 @@ load_lasp(Node, _Config, Case) ->
     ok = rpc:call(Node, application, set_env, [lasp,
                                                instrumentation,
                                                false]),
-    ok = rpc:call(Node, application, set_env, [lager,
-                                               log_root,
-                                               NodeDir]),
     ok = rpc:call(Node, application, set_env, [plumtree,
                                                plumtree_data_dir,
                                                NodeDir]),
@@ -329,15 +325,15 @@ load_lasp(Node, _Config, Case) ->
                                                [lasp_plumtree_backend]]),
     ok = rpc:call(Node, lasp_config, set, [workflow, true]),
 
-    lager:info("Enabling membership..."),
+    logger:info("Enabling membership..."),
     ok = rpc:call(Node, lasp_config, set, [membership, true]),
 
-    lager:info("Disabling blocking sync..."),
+    logger:info("Disabling blocking sync..."),
     ok = rpc:call(Node, lasp_config, set, [blocking_sync, false]),
 
     ok = rpc:call(Node, partisan_config, set, [partisan_peer_service_manager,
                                                partisan_pluggable_peer_service_manager]),
-    lager:info("Configured peer_service_manager ~p on node ~p",
+    logger:info("Configured peer_service_manager ~p on node ~p",
                [partisan_pluggable_peer_service_manager, Node]),
 
     ok = rpc:call(Node, application, set_env, [lasp,
@@ -349,7 +345,7 @@ start_lasp(Node, Config) ->
         {ok, _} = rpc:call(Node, application, ensure_all_started, [lasp])
     catch
         _:Error ->
-            lager:info("Node initialization for ~p failed: ~p", [Node, Error]),
+            logger:info("Node initialization for ~p failed: ~p", [Node, Error]),
             lists:foreach(fun(N) ->
                                   WebPort = rpc:call(N,
                                                      lasp_config,
@@ -359,7 +355,7 @@ start_lasp(Node, Config) ->
                                                       lasp_config,
                                                       get,
                                                       [peer_port, undefined]),
-                                  lager:info("Node: ~p PeerPort: ~p WebPort ~p", [N, PeerPort, WebPort])
+                                  logger:info("Node: ~p PeerPort: ~p WebPort ~p", [N, PeerPort, WebPort])
                           end, proplists:get_value(started, Config) ++ [Node]),
             ct:fail(can_not_initialize_node)
     end,
@@ -384,7 +380,7 @@ start_slave(Name, NodeConfig, _Case) ->
                         Error ->
                             ct:fail(Error)
                     end;
-                {error, stop_timeout, _Node} ->
+                {error, stop_timeout, _} ->
                     ok;
                 Error ->
                     ct:fail(Error)
@@ -398,7 +394,7 @@ push_logs() ->
         false ->
             ok;
         _ ->
-            lager:info("Will push logs."),
+            logger:info("Will push logs."),
             case LOGS of
                 "s3" ->
                     %% Configure erlcloud.
@@ -410,11 +406,11 @@ push_logs() ->
                     BucketName = "lasp-instrumentation-logs",
                     %% Create S3 bucket.
                     try
-                        lager:info("Creating bucket: ~p", [BucketName]),
+                        logger:info("Creating bucket: ~p", [BucketName]),
                         ok = erlcloud_s3:create_bucket(BucketName)
                     catch
                         _:{aws_error, Error} ->
-                            lager:info("Bucket creation failed: ~p", [Error]),
+                            logger:info("Bucket creation failed: ~p", [Error]),
                             ok
                     end,
 
@@ -422,13 +418,13 @@ push_logs() ->
                     lists:foreach(
                         fun({FilePath, S3Id}) ->
                             {ok, Binary} = file:read_file(FilePath),
-                            lager:info("Pushing log to S3 ~p.", [S3Id]),
+                            logger:info("Pushing log to S3 ~p.", [S3Id]),
                             erlcloud_s3:put_object(BucketName, S3Id, Binary)
                         end,
                         lasp_instrumentation:log_files()
                     ),
 
-                    lager:info("Pushing logs completed.");
+                    logger:info("Pushing logs completed.");
                 "redis" ->
                     RedisHost = os:getenv("REDIS_SERVICE_HOST", "127.0.0.1"),
                     RedisPort = os:getenv("REDIS_SERVICE_PORT", "6379"),
@@ -439,13 +435,13 @@ push_logs() ->
                         fun({FilePath, S3Id}) ->
                             {ok, Binary} = file:read_file(FilePath),
 
-                            lager:info("Pushing log to Redis ~p.", [S3Id]),
+                            logger:info("Pushing log to Redis ~p.", [S3Id]),
                             {ok, <<"OK">>} = eredis:q(C, ["SET", S3Id, Binary])
                         end,
                         lasp_instrumentation:log_files()
                     ),
 
-                    lager:info("Pushing logs completed.")
+                    logger:info("Pushing logs completed.")
             end
     end.
 

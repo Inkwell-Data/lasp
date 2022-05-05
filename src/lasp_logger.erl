@@ -32,7 +32,7 @@ extended(Message) ->
 extended(Message, Args) ->
     case lasp_config:get(extended_logging, false) of
         true ->
-            lager:info(Message, Args);
+            logger:info(Message, Args);
         _ ->
             ok
     end.
@@ -43,7 +43,7 @@ mailbox(Message) ->
 mailbox(Message, Args) ->
     case lasp_config:get(mailbox_logging, false) of
         true ->
-            lager:info(Message, Args);
+            logger:info(Message, Args);
         _ ->
             ok
     end.

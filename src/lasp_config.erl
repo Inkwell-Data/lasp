@@ -59,7 +59,7 @@ web_config() ->
         {dispatch, dispatch()}
     ],
     Node = lasp_support:mynode(),
-    lager:info("Node ~p enabling web configuration: ~p", [Node, Config]),
+    logger:info("Node ~p enabling web configuration: ~p", [Node, Config]),
     Config.
 
 %% @private

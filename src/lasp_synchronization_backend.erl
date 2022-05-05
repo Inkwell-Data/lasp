@@ -58,16 +58,16 @@ compute_exchange(Peers) ->
         true ->
             case PeerServiceManager of
                 partisan_client_server_peer_service_manager ->
-                    lager:info("Partitioning from server."),
+                    logger:info("Partitioning from server."),
                     [];
                 _ ->
-                    lager:info("Partitioning ~p% of the network.",
+                    logger:info("Partitioning ~p% of the network.",
                                [Percent]),
 
                     %% Select percentage, minus one node which will be
                     %% the server node.
                     K = round((Percent / 100) * length(Peers)),
-                    lager:info("Partitioning ~p%: ~p nodes.",
+                    logger:info("Partitioning ~p%: ~p nodes.",
                                [Percent, K]),
                     ServerNodes = case PeerServiceManager:active(server) of
                         {ok, undefined} ->
@@ -77,11 +77,11 @@ compute_exchange(Peers) ->
                         error ->
                             []
                     end,
-                    lager:info("ServerNodes: ~p", [ServerNodes]),
+                    logger:info("ServerNodes: ~p", [ServerNodes]),
 
                     Random = select_random_sublist(Peers, K),
                     RandomAndServer = lists:usort(ServerNodes ++ Random),
-                    lager:info("Partitioning ~p from ~p during sync.",
+                    logger:info("Partitioning ~p from ~p during sync.",
                                [RandomAndServer, Peers -- RandomAndServer]),
                     Peers -- RandomAndServer
             end;
@@ -134,7 +134,7 @@ send(Mod, Msg, Peer) ->
         ok ->
             ok;
         _Error ->
-            % lager:error("Failed send to ~p for reason ~p", [Peer, Error]),
+            % logger:error("Failed send to ~p for reason ~p", [Peer, Error]),
             ok
     end.
 
@@ -155,6 +155,6 @@ log_transmission(ToLog, PeerCount) ->
         end
     catch
         _:Error ->
-            lager:error("Couldn't log transmission: ~p", [Error]),
+            logger:error("Couldn't log transmission: ~p", [Error]),
             ok
     end.

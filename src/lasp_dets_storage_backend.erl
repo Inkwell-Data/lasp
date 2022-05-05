@@ -115,7 +115,7 @@ init([Identifier]) ->
         end
     catch
         _:Reason ->
-            _ = lager:info("Backend initialization failed!"),
+            _ = logger:info("Backend initialization failed!"),
             {stop, Reason}
     end.
 
@@ -158,17 +158,17 @@ handle_call(reset, _From, #state{ref=Ref}=State) ->
     ok = dets:delete_all_objects(Ref),
     {reply, ok, State};
 handle_call(Msg, _From, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {reply, ok, State}.
 
 %% @private
 handle_cast(Msg, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private
 handle_info(Msg, State) ->
-    _ = lager:warning("Unhandled messages: ~p", [Msg]),
+    _ = logger:warning("Unhandled messages: ~p", [Msg]),
     {noreply, State}.
 
 %% @private
