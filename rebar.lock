@@ -2,7 +2,7 @@
 [{<<"acceptor_pool">>,{pkg,<<"acceptor_pool">>,<<"1.0.0">>},1},
  {<<"gen_flow">>,{pkg,<<"gen_flow">>,<<"0.0.5">>},0},
  {<<"gen_fsm_compat">>,
-  {git,"git@github.com:Inkwell-Data/gen_fsm_compat.git",
+  {git,"https://github.com/Inkwell-Data/gen_fsm_compat.git",
        {ref,"af8ee864d802be045eef67b6845fc28d9cae2f20"}},
   0},
  {<<"lasp_support">>,{pkg,<<"lasp_support">>,<<"0.1.0">>},0},
@@ -14,7 +14,7 @@
   {git,"https://github.com/Inkwell-Data/plumtree.git",
        {ref,"f7fb3da55ba2bea8e84224dc1eedbc333ee97c85"}},
   0},
- {<<"quickrand">>,{pkg,<<"quickrand">>,<<"2.0.2">>},2},
+ {<<"quickrand">>,{pkg,<<"quickrand">>,<<"2.0.4">>},2},
  {<<"types">>,
   {git,"https://github.com/Inkwell-Data/types.git",
        {ref,"8cfaeb1bd7a0983db62d1ed3129e7cab91239ff6"}},
@@ -25,12 +25,12 @@
  {<<"acceptor_pool">>, <<"43C20D2ACAE35F0C2BCD64F9D2BDE267E459F0F3FD23DAB26485BF518C281B21">>},
  {<<"gen_flow">>, <<"2FF6ABE3ED1C5C9BC41F81BF09364A3F63F96E4D378D45A2A2DDC4FC06F3484A">>},
  {<<"lasp_support">>, <<"A6D665138BD8C10555FE7A4A2A81A8A47079EAE5FFC368D411DE660EB7A66F04">>},
- {<<"quickrand">>, <<"1D73FAA52E0C149FCBC72A63C26135FF68BE8FA7870675C73645896788A7540C">>},
+ {<<"quickrand">>, <<"168CA3A8466A26912B8C3A1D6AA58975E1BB49E5C7AFB4998B80F6B90F910490">>},
  {<<"uuid">>, <<"0D1CA9D94CA3B058467BCE20B7706CC816A2BDBBE0574DD008936AE97EA4EBE7">>}]},
 {pkg_hash_ext,[
  {<<"acceptor_pool">>, <<"0CBCD83FDC8B9AD2EEE2067EF8B91A14858A5883CB7CD800E6FCD5803E158788">>},
  {<<"gen_flow">>, <<"AA139C67942475A08B73D754587FFD4694CE92A149A26D16DDB16EBD6CC19EB4">>},
  {<<"lasp_support">>, <<"D57A85BA77607BB097CE4B9DD233E29C98C4824468D1A7BE06C9C6C15D8618F8">>},
- {<<"quickrand">>, <<"E21C6C7F29CA995468662085CA54D7D09E861C180A9DFEC2CF4A2E75364A16D6">>},
+ {<<"quickrand">>, <<"4CB18E9304CF28E054E8DC6E151D1AC7F174E6FE31D5C1A07F71279B92A90800">>},
  {<<"uuid">>, <<"4866CA7B3BD0265BC371590DCD0FE2832FC08588A071B72D07E09E23F163D0D6">>}]}
 ].
