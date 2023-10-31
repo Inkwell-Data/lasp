@@ -1,6 +1,6 @@
 {application,lasp,
              [{description,"Declarative, distributed, eventually consistent compuations."},
-              {vsn,"0.2.0"},
+              {vsn,"0.20.0"},
               {maintainers,["Inkwell-Data"]},
               {links,[{"Github","https://github.com/Inkwell-Data/lasp"}]},
               {licenses,["Apache 2"]},
